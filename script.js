@@ -1,413 +1,303 @@
-// ===== Game State =====
-let board = ['', '', '', '', '', '', '', '', ''];
-let currentPlayer = 'X';
-let gameActive = true;
-let scores = { x: 0, o: 0, ties: 0 };
-let stats = { totalGames: 0, xWins: 0, oWins: 0, totalTies: 0 };
-let settings = {
-    playerXName: 'Player X',
-    playerOName: 'Player O',
-    soundEnabled: true,
-    animationEnabled: true
-};
+// ===== DOM Elements =====
+const board = document.getElementById("board");
+const cells = document.querySelectorAll(".cell");
+const statusText = document.getElementById("statusText");
+const statusIcon = document.getElementById("statusIcon");
+const restartBtn = document.getElementById("restartBtn");
+const resetBtn = document.getElementById("resetBtn");
+const winModal = document.getElementById("winModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalSubtitle = document.getElementById("modalSubtitle");
+const modalIcon = document.getElementById("modalIcon");
+const modalClose = document.getElementById("modalClose");
+const modalPlayAgain = document.getElementById("modalPlayAgain");
+const winLine = document.getElementById("winLine");
+const scoreXElement = document.getElementById("scoreX");
+const scoreOElement = document.getElementById("scoreO");
+const scoreTieElement = document.getElementById("scoreTie");
+const canvas = document.getElementById("particles-canvas");
+const ctx = canvas.getContext("2d");
 
-// Winning combinations
-const winPatterns = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-    [0, 4, 8], [2, 4, 6] // Diagonals
+// ===== Game State =====
+let currentPlayer = "X";
+let gameActive = true;
+let gameState = ["", "", "", "", "", "", "", "", ""];
+let scores = { x: 0, o: 0, tie: 0 };
+
+const winningConditions = [
+  [0,1,2], [3,4,5], [6,7,8],
+  [0,3,6], [1,4,7], [2,5,8],
+  [0,4,8], [2,4,6]
 ];
 
-// ===== DOM Elements =====
-const cells = document.querySelectorAll('.cell');
-const statusText = document.getElementById('status-text');
-const currentIcon = document.getElementById('current-icon');
-const scoreXElement = document.getElementById('score-x');
-const scoreOElement = document.getElementById('score-o');
-const scoreTiesElement = document.getElementById('score-ties');
-const resetBtn = document.getElementById('reset-btn');
-const newGameBtn = document.getElementById('new-game-btn');
-const winModal = document.getElementById('win-modal');
-const modalTitle = document.getElementById('modal-title');
-const modalMessage = document.getElementById('modal-message');
-const modalIcon = document.getElementById('modal-icon');
-const modalClose = document.getElementById('modal-close');
-const modalPlayAgain = document.getElementById('modal-play-again');
-const winningLine = document.getElementById('winning-line');
+// ===== Particles Setup =====
+let particles = [];
 
-// Navigation
-const navBtns = document.querySelectorAll('.nav-btn');
-const views = document.querySelectorAll('.view');
-
-// Stats
-const totalGamesElement = document.getElementById('total-games');
-const xWinsElement = document.getElementById('x-wins');
-const oWinsElement = document.getElementById('o-wins');
-const totalTiesElement = document.getElementById('total-ties');
-const resetStatsBtn = document.getElementById('reset-stats-btn');
-
-// Settings
-const playerXInput = document.getElementById('player-x-input');
-const playerOInput = document.getElementById('player-o-input');
-const soundToggle = document.getElementById('sound-toggle');
-const animationToggle = document.getElementById('animation-toggle');
-const saveSettingsBtn = document.getElementById('save-settings-btn');
-const playerXName = document.getElementById('player-x-name');
-const playerOName = document.getElementById('player-o-name');
-
-// ===== Initialize Game =====
-function init() {
-    loadSettings();
-    loadScores();
-    loadStats();
-    updateDisplay();
-    attachEventListeners();
+function setupCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 
-// ===== Event Listeners =====
-function attachEventListeners() {
-    cells.forEach(cell => {
-        cell.addEventListener('click', handleCellClick);
-    });
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2 + 1;
+    this.speedX = Math.random() * 0.5 - 0.25;
+    this.speedY = Math.random() * 0.5 - 0.25;
+    this.opacity = Math.random() * 0.5 + 0.2;
+  }
 
-    resetBtn.addEventListener('click', resetGame);
-    newGameBtn.addEventListener('click', newGame);
-    modalClose.addEventListener('click', closeModal);
-    modalPlayAgain.addEventListener('click', () => {
-        closeModal();
-        newGame();
-    });
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
 
-    // Navigation
-    navBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const view = btn.getAttribute('data-view');
-            switchView(view);
-        });
-    });
+    if (this.x > canvas.width) this.x = 0;
+    if (this.x < 0) this.x = canvas.width;
+    if (this.y > canvas.height) this.y = 0;
+    if (this.y < 0) this.y = canvas.height;
+  }
 
-    // Stats
-    resetStatsBtn.addEventListener('click', resetStats);
-
-    // Settings
-    saveSettingsBtn.addEventListener('click', saveSettings);
+  draw() {
+    ctx.fillStyle = `rgba(168, 85, 247, ${this.opacity})`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
-// ===== Particle Effects =====
-function createParticles(cell) {
-    const particlesContainer = document.getElementById('particles');
-    const rect = cell.getBoundingClientRect();
-    const containerRect = particlesContainer.getBoundingClientRect();
-    
-    const colors = currentPlayer === 'X' 
-        ? ['#667eea', '#764ba2', '#8b5cf6'] 
-        : ['#f093fb', '#f5576c', '#ec4899'];
-    
-    for (let i = 0; i < 12; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        const size = Math.random() * 8 + 4;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.boxShadow = `0 0 10px ${colors[0]}`;
-        
-        const centerX = rect.left - containerRect.left + rect.width / 2;
-        const centerY = rect.top - containerRect.top + rect.height / 2;
-        
-        particle.style.left = centerX + 'px';
-        particle.style.top = centerY + 'px';
-        
-        const angle = (Math.PI * 2 * i) / 12;
-        const velocity = Math.random() * 50 + 30;
-        const tx = Math.cos(angle) * velocity;
-        const ty = Math.sin(angle) * velocity;
-        
-        particle.style.setProperty('--tx', tx + 'px');
-        particle.style.setProperty('--ty', ty + 'px');
-        
-        particlesContainer.appendChild(particle);
-        
-        setTimeout(() => {
-            particle.remove();
-        }, 2000);
-    }
+function initParticles() {
+  for (let i = 0; i < 50; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(particle => {
+    particle.update();
+    particle.draw();
+  });
+  requestAnimationFrame(animateParticles);
+}
+
+// ===== Confetti Effect =====
+function createConfetti() {
+  const colors = ['#a855f7', '#ec4899', '#06b6d4', '#3b82f6', '#f97316'];
+  const confettiCount = 60;
+  
+  for (let i = 0; i < confettiCount; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.style.position = 'fixed';
+      confetti.style.width = Math.random() * 12 + 5 + 'px';
+      confetti.style.height = Math.random() * 12 + 5 + 'px';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.left = Math.random() * window.innerWidth + 'px';
+      confetti.style.top = '-20px';
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      confetti.style.opacity = '1';
+      confetti.style.pointerEvents = 'none';
+      confetti.style.zIndex = '9999';
+      confetti.style.boxShadow = `0 0 15px ${colors[Math.floor(Math.random() * colors.length)]}`;
+      
+      document.body.appendChild(confetti);
+      
+      const duration = Math.random() * 3000 + 2500;
+      const endX = parseFloat(confetti.style.left) + (Math.random() - 0.5) * 300;
+      const rotation = Math.random() * 720;
+      
+      confetti.animate([
+        { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+        { transform: `translateY(${window.innerHeight + 50}px) translateX(${endX - parseFloat(confetti.style.left)}px) rotate(${rotation}deg)`, opacity: 0 }
+      ], {
+        duration: duration,
+        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+      }).onfinish = () => confetti.remove();
+    }, i * 25);
+  }
 }
 
 // ===== Game Logic =====
+
 function handleCellClick(e) {
-    const cell = e.target.closest('.cell');
-    if (!cell) return;
-    
-    const index = cell.getAttribute('data-index');
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  
+  const index = cell.getAttribute("data-index");
 
-    if (board[index] !== '' || !gameActive) return;
+  if (gameState[index] !== "" || !gameActive) return;
 
-    board[index] = currentPlayer;
-    cell.textContent = currentPlayer === 'X' ? '✕' : '◯';
-    cell.classList.add(currentPlayer.toLowerCase());
+  gameState[index] = currentPlayer;
+  cell.textContent = currentPlayer === 'X' ? '✕' : '◯';
+  cell.classList.add(currentPlayer.toLowerCase());
+
+  createCellParticles(cell);
+  checkResult();
+}
+
+function createCellParticles(cell) {
+  const rect = cell.getBoundingClientRect();
+  const colors = currentPlayer === 'X' 
+    ? ['#06b6d4', '#3b82f6'] 
+    : ['#a855f7', '#ec4899'];
+  
+  for (let i = 0; i < 15; i++) {
+    const particle = document.createElement('div');
+    particle.style.position = 'fixed';
+    particle.style.width = Math.random() * 8 + 4 + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.borderRadius = '50%';
+    particle.style.left = rect.left + rect.width / 2 + 'px';
+    particle.style.top = rect.top + rect.height / 2 + 'px';
+    particle.style.pointerEvents = 'none';
+    particle.style.zIndex = '9999';
+    particle.style.boxShadow = `0 0 10px ${colors[0]}`;
     
-    // Create particle effects
-    createParticles(cell);
+    document.body.appendChild(particle);
     
-    if (settings.animationEnabled) {
-        cell.style.animation = 'none';
-        setTimeout(() => {
-            cell.style.animation = '';
-        }, 10);
+    const angle = (Math.PI * 2 * i) / 15;
+    const velocity = Math.random() * 60 + 40;
+    const tx = Math.cos(angle) * velocity;
+    const ty = Math.sin(angle) * velocity;
+    
+    particle.animate([
+      { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+    ], {
+      duration: 1200,
+      easing: 'cubic-bezier(0, .9, .57, 1)'
+    }).onfinish = () => particle.remove();
+  }
+}
+
+function drawWinLine(pattern) {
+  const boardRect = board.getBoundingClientRect();
+  const [a, b, c] = pattern;
+  
+  const startCell = cells[a].getBoundingClientRect();
+  const endCell = cells[c].getBoundingClientRect();
+  
+  const startX = startCell.left - boardRect.left + startCell.width / 2;
+  const startY = startCell.top - boardRect.top + startCell.height / 2;
+  const endX = endCell.left - boardRect.left + endCell.width / 2;
+  const endY = endCell.top - boardRect.top + endCell.height / 2;
+  
+  const line = winLine.querySelector('line');
+  line.setAttribute('x1', startX);
+  line.setAttribute('y1', startY);
+  line.setAttribute('x2', endX);
+  line.setAttribute('y2', endY);
+  
+  winLine.classList.add('show');
+}
+
+function checkResult() {
+  let roundWon = false;
+  let winPattern = null;
+
+  for (let condition of winningConditions) {
+    const [a, b, c] = condition;
+    if (
+      gameState[a] &&
+      gameState[a] === gameState[b] &&
+      gameState[a] === gameState[c]
+    ) {
+      roundWon = true;
+      winPattern = condition;
+      break;
     }
+  }
 
-    if (checkWin()) {
-        handleWin();
-    } else if (board.every(cell => cell !== '')) {
-        handleTie();
-    } else {
-        switchPlayer();
-    }
-}
-
-function checkWin() {
-    return winPatterns.some(pattern => {
-        const [a, b, c] = pattern;
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-            drawWinningLine(pattern);
-            return true;
-        }
-        return false;
-    });
-}
-
-function drawWinningLine(pattern) {
-    const boardElement = document.getElementById('game-board');
-    const boardRect = boardElement.getBoundingClientRect();
-    const cellSize = boardRect.width / 3;
-    
-    const [a, b, c] = pattern;
-    const startCell = cells[a].getBoundingClientRect();
-    const endCell = cells[c].getBoundingClientRect();
-    
-    const startX = startCell.left - boardRect.left + startCell.width / 2;
-    const startY = startCell.top - boardRect.top + startCell.height / 2;
-    const endX = endCell.left - boardRect.left + endCell.width / 2;
-    const endY = endCell.top - boardRect.top + endCell.height / 2;
-    
-    const line = winningLine.querySelector('line');
-    line.setAttribute('x1', startX);
-    line.setAttribute('y1', startY);
-    line.setAttribute('x2', endX);
-    line.setAttribute('y2', endY);
-    
-    winningLine.classList.add('show');
-}
-
-function handleWin() {
+  if (roundWon) {
     gameActive = false;
-    const winner = currentPlayer;
-    const winnerName = winner === 'X' ? settings.playerXName : settings.playerOName;
-    
-    if (winner === 'X') {
-        scores.x++;
-        stats.xWins++;
+    if (currentPlayer === 'X') {
+      scores.x++;
     } else {
-        scores.o++;
-        stats.oWins++;
+      scores.o++;
     }
-    stats.totalGames++;
-    
-    saveScores();
-    saveStats();
-    updateDisplay();
+    updateScores();
+    drawWinLine(winPattern);
+    createConfetti();
     
     setTimeout(() => {
-        showModal(
-            '🎉',
-            `${winnerName} Wins!`,
-            'Congratulations on your victory!'
-        );
+      modalIcon.textContent = '🎉';
+      modalTitle.textContent = `Player ${currentPlayer} Wins!`;
+      modalSubtitle.textContent = 'Congratulations on your victory!';
+      winModal.classList.add('show');
     }, 600);
-}
+    return;
+  }
 
-function handleTie() {
+  if (!gameState.includes("")) {
     gameActive = false;
-    scores.ties++;
-    stats.totalTies++;
-    stats.totalGames++;
-    
-    saveScores();
-    saveStats();
-    updateDisplay();
+    scores.tie++;
+    updateScores();
     
     setTimeout(() => {
-        showModal(
-            '🤝',
-            "It's a Tie!",
-            'Well played by both players!'
-        );
+      modalIcon.textContent = '🤝';
+      modalTitle.textContent = "It's a Tie!";
+      modalSubtitle.textContent = 'Well played by both players!';
+      winModal.classList.add('show');
     }, 300);
+    return;
+  }
+
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+  statusText.textContent = `Player ${currentPlayer}'s turn`;
+  statusIcon.textContent = currentPlayer === 'X' ? '✕' : '◯';
 }
 
-function switchPlayer() {
-    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    updateStatus();
+function updateScores() {
+  scoreXElement.textContent = scores.x;
+  scoreOElement.textContent = scores.o;
+  scoreTieElement.textContent = scores.tie;
 }
 
-function updateStatus() {
-    const playerName = currentPlayer === 'X' ? settings.playerXName : settings.playerOName;
-    statusText.textContent = `${playerName}'s Turn`;
-    currentIcon.textContent = currentPlayer === 'X' ? '✕' : '◯';
+function restartGame() {
+  currentPlayer = "X";
+  gameActive = true;
+  gameState = ["", "", "", "", "", "", "", "", ""];
+  statusText.textContent = "Player X's turn";
+  statusIcon.textContent = '✕';
+  winLine.classList.remove('show');
+  cells.forEach(cell => {
+    cell.textContent = "";
+    cell.classList.remove("x", "o");
+  });
 }
 
 function resetGame() {
-    board = ['', '', '', '', '', '', '', '', ''];
-    currentPlayer = 'X';
-    gameActive = true;
-    
-    cells.forEach(cell => {
-        cell.textContent = '';
-        cell.classList.remove('x', 'o', 'disabled');
-    });
-    
-    winningLine.classList.remove('show');
-    updateStatus();
-}
-
-function newGame() {
-    resetGame();
-    closeModal();
-}
-
-// ===== Modal =====
-function showModal(icon, title, message) {
-    modalIcon.textContent = icon;
-    modalTitle.textContent = title;
-    modalMessage.textContent = message;
-    winModal.classList.add('show');
+  restartGame();
+  scores = { x: 0, o: 0, tie: 0 };
+  updateScores();
 }
 
 function closeModal() {
-    winModal.classList.remove('show');
+  winModal.classList.remove('show');
 }
 
-// ===== Display Updates =====
-function updateDisplay() {
-    scoreXElement.textContent = scores.x;
-    scoreOElement.textContent = scores.o;
-    scoreTiesElement.textContent = scores.ties;
-    
-    totalGamesElement.textContent = stats.totalGames;
-    xWinsElement.textContent = stats.xWins;
-    oWinsElement.textContent = stats.oWins;
-    totalTiesElement.textContent = stats.totalTies;
-    
-    playerXName.textContent = settings.playerXName;
-    playerOName.textContent = settings.playerOName;
-    
-    updateStatus();
-}
+// ===== Event Listeners =====
+cells.forEach(cell => cell.addEventListener("click", handleCellClick));
+restartBtn.addEventListener("click", restartGame);
+resetBtn.addEventListener("click", resetGame);
+modalClose.addEventListener("click", closeModal);
+modalPlayAgain.addEventListener("click", () => {
+  closeModal();
+  restartGame();
+});
 
-// ===== Navigation =====
-function switchView(viewName) {
-    navBtns.forEach(btn => btn.classList.remove('active'));
-    views.forEach(view => view.classList.remove('active'));
-    
-    const activeBtn = document.querySelector(`[data-view="${viewName}"]`);
-    const activeView = document.getElementById(`${viewName}-view`);
-    
-    if (activeBtn && activeView) {
-        activeBtn.classList.add('active');
-        activeView.classList.add('active');
-    }
-}
+window.addEventListener('resize', setupCanvas);
 
-// ===== Stats =====
-function resetStats() {
-    if (confirm('Are you sure you want to reset all statistics? This cannot be undone.')) {
-        stats = { totalGames: 0, xWins: 0, oWins: 0, totalTies: 0 };
-        scores = { x: 0, o: 0, ties: 0 };
-        saveStats();
-        saveScores();
-        updateDisplay();
-    }
-}
-
-// ===== Settings =====
-function saveSettings() {
-    const xName = playerXInput.value.trim();
-    const oName = playerOInput.value.trim();
-    
-    if (xName) settings.playerXName = xName;
-    if (oName) settings.playerOName = oName;
-    
-    settings.soundEnabled = soundToggle.checked;
-    settings.animationEnabled = animationToggle.checked;
-    
-    localStorage.setItem('ticTacToeSettings', JSON.stringify(settings));
-    updateDisplay();
-    
-    // Show success feedback
-    saveSettingsBtn.textContent = 'Saved! ✓';
-    saveSettingsBtn.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
-    
-    setTimeout(() => {
-        saveSettingsBtn.textContent = 'Save Settings';
-        saveSettingsBtn.style.background = '';
-    }, 2000);
-}
-
-function loadSettings() {
-    const saved = localStorage.getItem('ticTacToeSettings');
-    if (saved) {
-        settings = JSON.parse(saved);
-        playerXInput.value = settings.playerXName;
-        playerOInput.value = settings.playerOName;
-        soundToggle.checked = settings.soundEnabled;
-        animationToggle.checked = settings.animationEnabled;
-    }
-}
-
-// ===== Local Storage =====
-function saveScores() {
-    localStorage.setItem('ticTacToeScores', JSON.stringify(scores));
-}
-
-function loadScores() {
-    const saved = localStorage.getItem('ticTacToeScores');
-    if (saved) {
-        scores = JSON.parse(saved);
-    }
-}
-
-function saveStats() {
-    localStorage.setItem('ticTacToeStats', JSON.stringify(stats));
-}
-
-function loadStats() {
-    const saved = localStorage.getItem('ticTacToeStats');
-    if (saved) {
-        stats = JSON.parse(saved);
-    }
-}
-
-// ===== Initialize on Load =====
-document.addEventListener('DOMContentLoaded', init);
-
-// ===== Close modal when clicking overlay =====
 document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-overlay')) {
-        closeModal();
-    }
+  if (e.target.classList.contains('modal-overlay')) {
+    closeModal();
+  }
 });
 
-// ===== Keyboard shortcuts =====
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
-    if (e.key === 'r' || e.key === 'R') {
-        resetGame();
-    }
-    if (e.key === 'n' || e.key === 'N') {
-        newGame();
-    }
-});
+// ===== Initialize =====
+setupCanvas();
+initParticles();
+animateParticles();
+updateScores();
