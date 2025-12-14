@@ -93,9 +93,53 @@ function attachEventListeners() {
     saveSettingsBtn.addEventListener('click', saveSettings);
 }
 
+// ===== Particle Effects =====
+function createParticles(cell) {
+    const particlesContainer = document.getElementById('particles');
+    const rect = cell.getBoundingClientRect();
+    const containerRect = particlesContainer.getBoundingClientRect();
+    
+    const colors = currentPlayer === 'X' 
+        ? ['#667eea', '#764ba2', '#8b5cf6'] 
+        : ['#f093fb', '#f5576c', '#ec4899'];
+    
+    for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 8 + 4;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.boxShadow = `0 0 10px ${colors[0]}`;
+        
+        const centerX = rect.left - containerRect.left + rect.width / 2;
+        const centerY = rect.top - containerRect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        const angle = (Math.PI * 2 * i) / 12;
+        const velocity = Math.random() * 50 + 30;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+        
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.setProperty('--ty', ty + 'px');
+        
+        particlesContainer.appendChild(particle);
+        
+        setTimeout(() => {
+            particle.remove();
+        }, 2000);
+    }
+}
+
 // ===== Game Logic =====
 function handleCellClick(e) {
-    const cell = e.target;
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    
     const index = cell.getAttribute('data-index');
 
     if (board[index] !== '' || !gameActive) return;
@@ -103,6 +147,9 @@ function handleCellClick(e) {
     board[index] = currentPlayer;
     cell.textContent = currentPlayer === 'X' ? '✕' : '◯';
     cell.classList.add(currentPlayer.toLowerCase());
+    
+    // Create particle effects
+    createParticles(cell);
     
     if (settings.animationEnabled) {
         cell.style.animation = 'none';
