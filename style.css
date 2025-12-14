@@ -104,6 +104,63 @@ h1 {
   margin-bottom: 15px;
 }
 
+.difficulty-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.difficulty-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.difficulty-buttons {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.difficulty-btn {
+  padding: 8px 20px;
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  font-family: Inter, system-ui, Arial;
+}
+
+.difficulty-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+  transform: translateY(-1px);
+}
+
+.difficulty-btn.active:hover {
+  background: linear-gradient(135deg, #b366f8, #ed5a9f);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+}
+
 .status {
   margin: 15px 0;
   font-weight: 600;
