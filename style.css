@@ -34,6 +34,9 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .creator-name {
@@ -44,6 +47,35 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: 0.5px;
+}
+
+.linkedin-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #0077b5, #005582);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 119, 181, 0.3);
+}
+
+.linkedin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 119, 181, 0.5);
+  background: linear-gradient(135deg, #0088cc, #006699);
+}
+
+.linkedin-btn:active {
+  transform: translateY(0);
+}
+
+.linkedin-btn svg {
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
 }
 
 .container {
