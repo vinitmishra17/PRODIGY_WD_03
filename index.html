@@ -5,160 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tic Tac Toe • PRODIGY_WD_03 • Vinit Mishra</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Animated Background -->
-  <div class="cosmic-bg">
-    <div class="stars"></div>
-    <div class="stars2"></div>
-    <div class="stars3"></div>
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-    <div class="glow glow-3"></div>
+  <div class="header">
+    <div class="creator-name">Vinit Mishra</div>
   </div>
 
-  <!-- Particles Container -->
-  <canvas id="particles-canvas"></canvas>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="18" stroke="url(#grad1)" stroke-width="3"/>
-        <path d="M12 12L28 28M28 12L12 28" stroke="url(#grad2)" stroke-width="3" stroke-linecap="round"/>
-        <defs>
-          <linearGradient id="grad1" x1="0" y1="0" x2="40" y2="40">
-            <stop offset="0%" stop-color="#a855f7"/>
-            <stop offset="100%" stop-color="#ec4899"/>
-          </linearGradient>
-          <linearGradient id="grad2" x1="0" y1="0" x2="40" y2="40">
-            <stop offset="0%" stop-color="#06b6d4"/>
-            <stop offset="100%" stop-color="#3b82f6"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <span>Tic Tac Toe</span>
-    </div>
-    <div class="header-badge">Prodigy InfoTech</div>
-  </header>
-
-  <!-- Main Game Container -->
   <main class="container">
-    <div class="game-card">
-      <!-- Score Board -->
-      <div class="scoreboard">
-        <div class="score-item score-x">
-          <div class="score-icon">✕</div>
-          <div class="score-details">
-            <span class="score-label">Player X</span>
-            <span class="score-value" id="scoreX">0</span>
-          </div>
-        </div>
-        <div class="score-item score-tie">
-          <div class="score-icon">—</div>
-          <div class="score-details">
-            <span class="score-label">Ties</span>
-            <span class="score-value" id="scoreTie">0</span>
-          </div>
-        </div>
-        <div class="score-item score-o">
-          <div class="score-icon">◯</div>
-          <div class="score-details">
-            <span class="score-label">Player O</span>
-            <span class="score-value" id="scoreO">0</span>
-          </div>
-        </div>
-      </div>
+    <h1>Tic Tac Toe</h1>
+    <p class="sub">Task 03 — Prodigy InfoTech Web Dev Internship</p>
 
-      <!-- Game Status -->
-      <div id="status" class="status">
-        <span class="status-icon" id="statusIcon">✕</span>
-        <span class="status-text" id="statusText">Player X's turn</span>
-      </div>
+    <div id="status" class="status">Player X's turn</div>
 
-      <!-- Game Board -->
-      <div class="board-container">
-        <div class="board" id="board">
-          <div class="cell" data-index="0">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="1">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="2">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="3">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="4">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="5">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="6">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="7">
-            <span class="cell-glow"></span>
-          </div>
-          <div class="cell" data-index="8">
-            <span class="cell-glow"></span>
-          </div>
-        </div>
-        <svg class="win-line" id="winLine">
-          <line x1="0" y1="0" x2="0" y2="0" stroke="url(#lineGrad)" stroke-width="6" stroke-linecap="round"/>
-          <defs>
-            <linearGradient id="lineGrad">
-              <stop offset="0%" stop-color="#a855f7"/>
-              <stop offset="50%" stop-color="#ec4899"/>
-              <stop offset="100%" stop-color="#f97316"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      <!-- Controls -->
-      <div class="controls">
-        <button id="restartBtn" class="btn btn-restart">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.3051 3 16.4077 3.89124 18 5.33579" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M15 5L18 5L18 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Restart
-        </button>
-        <button id="resetBtn" class="btn btn-reset">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          New Game
-        </button>
-      </div>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
     </div>
+
+    <button id="restartBtn" class="btn">Restart Game</button>
   </main>
-
-  <!-- Win Modal -->
-  <div class="modal" id="winModal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-      <div class="modal-icon" id="modalIcon">🎉</div>
-      <h2 class="modal-title" id="modalTitle">Player X Wins!</h2>
-      <p class="modal-subtitle" id="modalSubtitle">Congratulations!</p>
-      <div class="modal-actions">
-        <button class="btn btn-modal-close" id="modalClose">Close</button>
-        <button class="btn btn-modal-play" id="modalPlayAgain">Play Again</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <p>Task 03 — Prodigy InfoTech Web Dev Internship • Crafted by Vinit Mishra with 💜</p>
-  </footer>
 
   <script src="script.js"></script>
 </body>
