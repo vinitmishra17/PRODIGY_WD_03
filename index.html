@@ -1,218 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe | Modern Game Experience</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic Tac Toe • PRODIGY_WD_03 • Vinit Mishra</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Background Animation -->
-    <div class="background-animation">
-        <div class="circle circle-1"></div>
-        <div class="circle circle-2"></div>
-        <div class="circle circle-3"></div>
-        <div class="stars"></div>
-        <div class="stars2"></div>
-        <div class="stars3"></div>
+  <!-- Animated Background -->
+  <div class="cosmic-bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="stars3"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
+
+  <!-- Particles Container -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="18" stroke="url(#grad1)" stroke-width="3"/>
+        <path d="M12 12L28 28M28 12L12 28" stroke="url(#grad2)" stroke-width="3" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="grad1" x1="0" y1="0" x2="40" y2="40">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#ec4899"/>
+          </linearGradient>
+          <linearGradient id="grad2" x1="0" y1="0" x2="40" y2="40">
+            <stop offset="0%" stop-color="#06b6d4"/>
+            <stop offset="100%" stop-color="#3b82f6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>Tic Tac Toe</span>
     </div>
+    <div class="header-badge">Prodigy InfoTech</div>
+  </header>
 
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <path d="M8 8L24 24M24 8L8 24" stroke="url(#gradient1)" stroke-width="3" stroke-linecap="round"/>
-                    <defs>
-                        <linearGradient id="gradient1" x1="8" y1="8" x2="24" y2="24">
-                            <stop offset="0%" stop-color="#667eea"/>
-                            <stop offset="100%" stop-color="#764ba2"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <span>Tic-Tac-Toe</span>
-            </div>
-            <nav class="nav">
-                <button class="nav-btn active" data-view="game">Game</button>
-                <button class="nav-btn" data-view="stats">Stats</button>
-                <button class="nav-btn" data-view="settings">Settings</button>
-            </nav>
+  <!-- Main Game Container -->
+  <main class="container">
+    <div class="game-card">
+      <!-- Score Board -->
+      <div class="scoreboard">
+        <div class="score-item score-x">
+          <div class="score-icon">✕</div>
+          <div class="score-details">
+            <span class="score-label">Player X</span>
+            <span class="score-value" id="scoreX">0</span>
+          </div>
         </div>
-    </header>
-
-    <!-- Main Game Container -->
-    <main class="main-container">
-        <div class="container">
-            <!-- Game View -->
-            <div class="view active" id="game-view">
-                <!-- Score Board -->
-                <div class="scoreboard">
-                    <div class="score-card player-x">
-                        <div class="player-icon">✕</div>
-                        <div class="score-info">
-                            <span class="player-name" id="player-x-name">Player X</span>
-                            <span class="score" id="score-x">0</span>
-                        </div>
-                    </div>
-                    <div class="score-card ties">
-                        <div class="player-icon">−</div>
-                        <div class="score-info">
-                            <span class="player-name">Ties</span>
-                            <span class="score" id="score-ties">0</span>
-                        </div>
-                    </div>
-                    <div class="score-card player-o">
-                        <div class="player-icon">◯</div>
-                        <div class="score-info">
-                            <span class="player-name" id="player-o-name">Player O</span>
-                            <span class="score" id="score-o">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Game Status -->
-                <div class="game-status">
-                    <div class="status-content">
-                        <span class="current-player-icon" id="current-icon">✕</span>
-                        <span class="status-text" id="status-text">Player X's Turn</span>
-                    </div>
-                </div>
-
-                <!-- Game Board -->
-                <div class="game-board-container">
-                    <div class="particles" id="particles"></div>
-                    <div class="game-board" id="game-board">
-                        <div class="cell" data-index="0"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="1"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="2"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="3"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="4"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="5"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="6"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="7"><span class="cell-bg"></span></div>
-                        <div class="cell" data-index="8"><span class="cell-bg"></span></div>
-                    </div>
-                    <svg class="winning-line" id="winning-line">
-                        <line x1="0" y1="0" x2="0" y2="0" stroke="url(#winGradient)" stroke-width="5" stroke-linecap="round"/>
-                        <defs>
-                            <linearGradient id="winGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#f093fb"/>
-                                <stop offset="100%" stop-color="#f5576c"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-
-                <!-- Game Controls -->
-                <div class="game-controls">
-                    <button class="btn btn-secondary" id="reset-btn">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C12.5 2.5 14.6667 3.66667 16 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M12 5.5L16 5.5L16 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Restart Game
-                    </button>
-                    <button class="btn btn-primary" id="new-game-btn">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M10 5V15M5 10H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        New Game
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats View -->
-            <div class="view" id="stats-view">
-                <div class="stats-container">
-                    <h2 class="view-title">Game Statistics</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">🎮</div>
-                            <div class="stat-value" id="total-games">0</div>
-                            <div class="stat-label">Total Games</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🏆</div>
-                            <div class="stat-value" id="x-wins">0</div>
-                            <div class="stat-label">Player X Wins</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🥇</div>
-                            <div class="stat-value" id="o-wins">0</div>
-                            <div class="stat-label">Player O Wins</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🤝</div>
-                            <div class="stat-value" id="total-ties">0</div>
-                            <div class="stat-label">Ties</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-danger" id="reset-stats-btn">
-                        Reset All Statistics
-                    </button>
-                </div>
-            </div>
-
-            <!-- Settings View -->
-            <div class="view" id="settings-view">
-                <div class="settings-container">
-                    <h2 class="view-title">Game Settings</h2>
-                    <div class="settings-form">
-                        <div class="form-group">
-                            <label for="player-x-input">Player X Name</label>
-                            <input type="text" id="player-x-input" class="form-input" placeholder="Enter Player X name" maxlength="15">
-                        </div>
-                        <div class="form-group">
-                            <label for="player-o-input">Player O Name</label>
-                            <input type="text" id="player-o-input" class="form-input" placeholder="Enter Player O name" maxlength="15">
-                        </div>
-                        <div class="form-group">
-                            <label>Sound Effects</label>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="sound-toggle" checked>
-                                <label for="sound-toggle" class="toggle-label"></label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Animations</label>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="animation-toggle" checked>
-                                <label for="animation-toggle" class="toggle-label"></label>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" id="save-settings-btn">
-                            Save Settings
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="score-item score-tie">
+          <div class="score-icon">—</div>
+          <div class="score-details">
+            <span class="score-label">Ties</span>
+            <span class="score-value" id="scoreTie">0</span>
+          </div>
         </div>
-    </main>
-
-    <!-- Win Modal -->
-    <div class="modal" id="win-modal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-icon" id="modal-icon">🎉</div>
-            <h3 class="modal-title" id="modal-title">Player X Wins!</h3>
-            <p class="modal-message" id="modal-message">Congratulations on your victory!</p>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" id="modal-close">Close</button>
-                <button class="btn btn-primary" id="modal-play-again">Play Again</button>
-            </div>
+        <div class="score-item score-o">
+          <div class="score-icon">◯</div>
+          <div class="score-details">
+            <span class="score-label">Player O</span>
+            <span class="score-value" id="scoreO">0</span>
+          </div>
         </div>
+      </div>
+
+      <!-- Game Status -->
+      <div id="status" class="status">
+        <span class="status-icon" id="statusIcon">✕</span>
+        <span class="status-text" id="statusText">Player X's turn</span>
+      </div>
+
+      <!-- Game Board -->
+      <div class="board-container">
+        <div class="board" id="board">
+          <div class="cell" data-index="0">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="1">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="2">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="3">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="4">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="5">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="6">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="7">
+            <span class="cell-glow"></span>
+          </div>
+          <div class="cell" data-index="8">
+            <span class="cell-glow"></span>
+          </div>
+        </div>
+        <svg class="win-line" id="winLine">
+          <line x1="0" y1="0" x2="0" y2="0" stroke="url(#lineGrad)" stroke-width="6" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="lineGrad">
+              <stop offset="0%" stop-color="#a855f7"/>
+              <stop offset="50%" stop-color="#ec4899"/>
+              <stop offset="100%" stop-color="#f97316"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button id="restartBtn" class="btn btn-restart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.3051 3 16.4077 3.89124 18 5.33579" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M15 5L18 5L18 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Restart
+        </button>
+        <button id="resetBtn" class="btn btn-reset">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          New Game
+        </button>
+      </div>
     </div>
+  </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 Tic-Tac-Toe. Crafted with ❤️</p>
-        </div>
-    </footer>
+  <!-- Win Modal -->
+  <div class="modal" id="winModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-icon" id="modalIcon">🎉</div>
+      <h2 class="modal-title" id="modalTitle">Player X Wins!</h2>
+      <p class="modal-subtitle" id="modalSubtitle">Congratulations!</p>
+      <div class="modal-actions">
+        <button class="btn btn-modal-close" id="modalClose">Close</button>
+        <button class="btn btn-modal-play" id="modalPlayAgain">Play Again</button>
+      </div>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Task 03 — Prodigy InfoTech Web Dev Internship • Crafted by Vinit Mishra with 💜</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
