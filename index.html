@@ -15,6 +15,9 @@
         <div class="circle circle-1"></div>
         <div class="circle circle-2"></div>
         <div class="circle circle-3"></div>
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
     </div>
 
     <!-- Header -->
@@ -80,16 +83,17 @@
 
                 <!-- Game Board -->
                 <div class="game-board-container">
+                    <div class="particles" id="particles"></div>
                     <div class="game-board" id="game-board">
-                        <div class="cell" data-index="0"></div>
-                        <div class="cell" data-index="1"></div>
-                        <div class="cell" data-index="2"></div>
-                        <div class="cell" data-index="3"></div>
-                        <div class="cell" data-index="4"></div>
-                        <div class="cell" data-index="5"></div>
-                        <div class="cell" data-index="6"></div>
-                        <div class="cell" data-index="7"></div>
-                        <div class="cell" data-index="8"></div>
+                        <div class="cell" data-index="0"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="1"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="2"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="3"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="4"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="5"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="6"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="7"><span class="cell-bg"></span></div>
+                        <div class="cell" data-index="8"><span class="cell-bg"></span></div>
                     </div>
                     <svg class="winning-line" id="winning-line">
                         <line x1="0" y1="0" x2="0" y2="0" stroke="url(#winGradient)" stroke-width="5" stroke-linecap="round"/>
